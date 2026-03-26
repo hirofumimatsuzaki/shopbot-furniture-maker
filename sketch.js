@@ -2,21 +2,21 @@
 const CANVAS_WIDTH = 2700;
 const CANVAS_HEIGHT = 1400;
 
-let d=10;
-let s=80;
-let s2=0;
-let s3=0;
-let s4=0;
-let s5=0;
-let s6=40;
-let s7=20;
-let s8=-80;
+let d = 10;
+let s = 80;
+let s2 = 0;
+let s3 = 0;
+let s4 = 0;
+let s5 = 0;
+let s6 = 40;
+let s7 = 20;
+let s8 = -80;
 let s9;
 let s10;
-let s11=0;
-let s12=30;
-//let sc=0;
-let test=0;//test
+let s11 = 0;
+let s12 = 30;
+
+let test = 0;
 let offsetX;
 let offsetY;
 let offsetX2;
@@ -27,14 +27,14 @@ let newX2;
 let newY2;
 let newX3;
 let newY3;
-let x1,y1;
-let x2,y2;
-let x3,y3;
-let x4,y4;
+let x1, y1;
+let x2, y2;
+let x3, y3;
+let x4, y4;
 let yp3;
 let yp4;
-let yp5=100;
-let xp6
+let yp5 = 100;
+let xp6;
 let yp6;
 let xp7;
 let yp7;
@@ -47,212 +47,214 @@ let length2;
 let length4;
 let length5;
 let length6;
-//let length7;
-let count=0;
+let count = 0;
 let mx;
 let my;
 let mx2;
 let my2;
 let centerY;
-let button;
-
 
 function setup() {
-    // 1. キャンバスを作成
-    //let canvas = createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
-    let canvas = createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT, SVG);
+  let canvas = createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT, SVG);
+  canvas.parent("canvas-container");
 
+  const btn = document.getElementById("download-button");
+  btn.addEventListener("click", saveS);
 
-    // 2. 作成したキャンバスを右側のカラムの要素にアタッチする
-    canvas.parent('canvas-container'); 
+  const furnitureSelect = document.getElementById("furniture_type");
 
-    const btn = document.getElementById("download-button");
+  furnitureSelect.addEventListener("change", function () {
+    const type = this.value;
 
-  btn.addEventListener("click", () => {
-    saveS();
+    const chairControls = document.getElementById("chair-controls");
+const deskControls = document.getElementById("desk-controls");
+const shelfControls = document.getElementById("shelf-controls");
+
+chairControls.style.display = "none";
+deskControls.style.display = "none";
+shelfControls.style.display = "none";
+
+if (type === "chair") {
+    chairControls.style.display = "block";
+} else if (type === "desk") {
+    deskControls.style.display = "block";
+} else if (type === "shelf") {
+    shelfControls.style.display = "block";
+}
   });
+
+  furnitureSelect.dispatchEvent(new Event("change"));
 }
 
 function draw() {
+  background(220);
+
+  push();
   scale(0.6);
-  translate(0,400);
-    background(220); // 毎フレーム背景を塗りつぶす（残像を消すため）
-   fill(50);
-   textSize(24);
-    text("側面縦幅"+(320+s3+d-(0+yp5))+"mm",10,20);
-    text("側面横幅"+(170+d+s2)+"mm",220,20);
-    text("全体縦幅"+(320+s3+d-(0+yp5)+20)+"mm",10,60);
-    text("全体横幅"+(170+d*2+s2)+"mm",220,60);
-    text(length6,10,60);
-    translate(0,300);
-    resultX = calculateX(x1, y1, x2, y2, yp3);
-    resultX2 = calculateX(x1, y1, x2, y2, yp4);
-    resultX3 = calculateX(x1, y1, x2, y2, yp5);
-    resultX4 = calculateX(xp6, yp6, xp7, yp7, yp8);
+  translate(0, 400);
 
-    // 元の線の傾きを計算
-  let dx = x2 - x1;
-  let dy = y2 - y1;
+  const furnitureType = document.getElementById("furniture_type").value;
 
-  // 元の線に垂直な方向の単位ベクトルを計算
-  let length = dist(x1, y1, x2, y2); // 元の線の長さ
-  let perpDx = -dy / length; // 垂直な方向のx成分
-  let perpDy = dx / length; // 垂直な方向のy成分
+  updateCommonParams();
 
-  // 移動する距離
-  let distance = d; // 30ピクセル垂直方向に移動
+  if (furnitureType === "chair") {
+    updateChairParams();
+    drawChair();
+  } else if (furnitureType === "desk") {
+    updateDeskParams();
+    drawDesk();
+  }
 
-  // 平行移動する分を計算
-   offsetX = perpDx * distance;
-   offsetY = perpDy * distance;
-
-   // 平行移動後の新しい点を計算
-   newX1 = x1 + offsetX;
-   newY1 = y1 + offsetY;
-  newX2 = resultX3 + offsetX;
-   newY2 = yp5 + offsetY;
-   newX3 = resultX4+s2-offsetX;
-   newY3 = yp8+s2/60-offsetY2;//
-   //let newX2 = resultX3 + offsetX;
-  //let newY2 = yp5 + offsetY;
-
-  length2=dist(resultX+s2,yp3,resultX2+s2, yp4);
-  length4=dist(resultX2+s2, yp4,resultX3+s2,yp5);
-  length5=dist(xp6,yp6,xp7+s2,yp7);
-
-  let dx2 = x4 - x3;
-  let dy2 = y4 - y3;
-
-  // 元の線に垂直な方向の単位ベクトルを計算
-  let length3 = dist(x3, y3, x4, y4); // 元の線の長さ
-  let perpDx2 = -dy2 / length3; // 垂直な方向のx成分
-  let perpDy2 = dx2 / length3; // 垂直な方向のy成分
-
-   // 移動する距離
-   let distance2 = d; // 30ピクセル垂直方向に移動
-
-   // 平行移動する分を計算
-    offsetX2 = perpDx2 * distance2;
-    offsetY2 = perpDy2 * distance2;
-
-    noStroke();
-  let angle = atan2(y2 - y1, x2 - x1);
-  let angleDegrees = degrees(angle);
-  
-  let theta = degrees(angle);
-  //fill(0);
-  //text("Angle: " + nf(angleDegrees, 1, 2) + " degrees", 10, 35);
-  
-  x1 = 140+s8
-  x2=145+s7+s8;
-
-  
-  //scale(sc/10);
-    
-    let inputValue=document.getElementById('material_thickness');
-    let iValue=parseFloat(inputValue.value);
-    document.getElementById('display_i').innerText = iValue + " mm";
-    // --- HTMLのスライダーから値を取得 ---
-    // id="s" のスライダー要素を取得
-    let sliderS = document.getElementById('s');
-    // スライダーの現在の値（文字列）を数値に変換
-    let sValue = parseFloat(sliderS.value);
-   // ellipse(1000,100,iValue,iValue);
-
-    // --- 数値表示の更新 ---
-    // id="display_s" のスパンに現在の値を表示
-    document.getElementById('display_s').innerText = sValue + " mm";
-
-    let sliderS2 = document.getElementById('s2');
-    let s2Value = parseFloat(sliderS2.value);
-    document.getElementById('display_s2').innerText = s2Value + " mm";
-
-    let sliderS3 = document.getElementById('s3');
-    let s3Value = parseFloat(sliderS3.value);
-    document.getElementById('display_s3').innerText = s3Value + " mm";
-
-    let sliderS5 = document.getElementById('s5');
-    let s5Value = parseFloat(sliderS5.value);
-    document.getElementById('display_s5').innerText = s5Value + " mm";
-
-    /*let sliderSC = document.getElementById('sc');
-    let scValue = parseFloat(sliderSC.value);
-    document.getElementById('display_sc').innerText = scValue/10 + " 倍";*/
-
-    let sliderYP5 = document.getElementById('yp5');
-    let yp5Value = parseFloat(sliderYP5.value);
-    document.getElementById('display_yp5').innerText = yp5Value + " mm";
-
-    let sliderS6 = document.getElementById('s6');
-    let s6Value = parseFloat(sliderS6.value);
-    document.getElementById('display_s6').innerText = s6Value + " mm";
-
-    let sliderS7 = document.getElementById('s7');
-    let s7Value = parseFloat(sliderS7.value);
-    document.getElementById('display_s7').innerText = s7Value + " mm";
-
-    let sliderS8 = document.getElementById('s8');
-    let s8Value = parseFloat(sliderS8.value);
-    document.getElementById('display_s8').innerText = s8Value + " mm";
-
-    let sliderS11 = document.getElementById('s11');
-    let s11Value = parseFloat(sliderS11.value);
-    document.getElementById('display_s11').innerText = s11Value + " mm";
-
-    let sliderS12 = document.getElementById('s12');
-    let s12Value = parseFloat(sliderS12.value);
-    document.getElementById('display_s12').innerText = s12Value + " mm";
-
-
-    d=iValue;
-    s=sValue;
-    s2=s2Value;
-    s3=s3Value;
-    s5=s5Value;
-    s6=s6Value;
-    s7=s7Value;
-    s8=s8Value;
-    s11=s11Value;
-    s12=s12Value;
-    //sc=scValue;
-    yp5=yp5Value;
-  
-
-    // --- 描画に反映 ---
-    fill(255); // 白色
-    noStroke();
-
-    sokumen(30,200);
-    //sokumen(30,1200);
-    ue(230+s2,100);
-    semotare(330+s2+s,100);
-    mae(450+s2+s*2,200+s3);
-    ushiro(500+s2+s*3,200+s3);
-    ashi(300+s2,50);
-    /*ashi(350+s2,50);
-    ashi(400+s2,50);
-    ashi(450+s2,50);*/
-    // スライダーの値(sValue)を円の直径として使用
-    // マウス位置を中心に描画
-    //ellipse(width / 2, height / 2, sValue, sValue); 
-    /*ellipse(20, 20, s2Value, s2Value); 
-    ellipse(40, 40, s3Value, s3Value); 
-    ellipse(60, 60, s5Value, s5Value); 
-    ellipse(80, 80, scValue, scValue); 
-    ellipse(100, 100, yp5Value, yp5Value); */
-
-    stroke(1);
-  strokeWeight(1);
-  
-  /*if(mx2!=null){
-  line(mx,my-300,mx2,my2-300);  
-     length6=dist(mx,my,mx2,my2);
-
-  }*/
-  centerY=120+s3+d;
-
-
+  pop();
 }
+
+function updateCommonParams() {
+  let inputValue = document.getElementById("material_thickness");
+  let iValue = parseFloat(inputValue.value);
+
+  d = iValue;
+  document.getElementById("display_i").innerText = iValue + " mm";
+}
+
+function updateChairParams() {
+  let sliderS = document.getElementById("s");
+  let sValue = parseFloat(sliderS.value);
+  document.getElementById("display_s").innerText = (sValue + 40) + " mm";
+
+  let sliderS2 = document.getElementById("s2");
+  let s2Value = parseFloat(sliderS2.value);
+  document.getElementById("display_s2").innerText = s2Value + " mm";
+
+  let sliderS3 = document.getElementById("s3");
+  let s3Value = parseFloat(sliderS3.value);
+  document.getElementById("display_s3").innerText = s3Value + " mm";
+
+  let sliderS5 = document.getElementById("s5");
+  let s5Value = parseFloat(sliderS5.value);
+  document.getElementById("display_s5").innerText = s5Value + " mm";
+
+  let sliderYP5 = document.getElementById("yp5");
+  let yp5Value = parseFloat(sliderYP5.value);
+  document.getElementById("display_yp5").innerText = yp5Value + " mm";
+
+  let sliderS6 = document.getElementById("s6");
+  let s6Value = parseFloat(sliderS6.value);
+  document.getElementById("display_s6").innerText = s6Value + " mm";
+
+  let sliderS7 = document.getElementById("s7");
+  let s7Value = parseFloat(sliderS7.value);
+  document.getElementById("display_s7").innerText = s7Value + " mm";
+
+  let sliderS8 = document.getElementById("s8");
+  let s8Value = parseFloat(sliderS8.value);
+  document.getElementById("display_s8").innerText = s8Value + " mm";
+
+  let sliderS11 = document.getElementById("s11");
+  let s11Value = parseFloat(sliderS11.value);
+  document.getElementById("display_s11").innerText = s11Value + " mm";
+
+  let sliderS12 = document.getElementById("s12");
+  let s12Value = parseFloat(sliderS12.value);
+  document.getElementById("display_s12").innerText = s12Value + " mm";
+
+  s = sValue;
+  s2 = s2Value;
+  s3 = s3Value;
+  s5 = s5Value;
+  s6 = s6Value;
+  s7 = s7Value;
+  s8 = s8Value;
+  s11 = s11Value;
+  s12 = s12Value;
+  yp5 = yp5Value;
+}
+
+function updateDeskParams() {
+  let deskWidth = parseFloat(document.getElementById("desk_width").value);
+  let deskDepth = parseFloat(document.getElementById("desk_depth").value);
+  let deskLegHeight = parseFloat(document.getElementById("desk_leg_height").value);
+  let deskApronHeight = parseFloat(document.getElementById("desk_apron_height").value);
+  let deskFootWidth = parseFloat(document.getElementById("desk_foot_width").value);
+  let deskLeg1Right = parseFloat(document.getElementById("desk_leg1_right").value);
+  let deskLeg2Right = parseFloat(document.getElementById("desk_leg2_right").value);
+  let deskLeg1Left = parseFloat(document.getElementById("desk_leg1_left").value);
+  let deskLeg2Left = parseFloat(document.getElementById("desk_leg2_left").value);
+
+  document.getElementById("display_desk_width").innerText = deskWidth + " mm";
+  document.getElementById("display_desk_depth").innerText = deskDepth + " mm";
+  document.getElementById("display_desk_leg_height").innerText = deskLegHeight + " mm";
+  document.getElementById("display_desk_apron_height").innerText = deskApronHeight + " mm";
+  document.getElementById("display_desk_foot_width").innerText = deskFootWidth + " mm";
+  document.getElementById("display_desk_leg1_right").innerText = deskLeg1Right + " mm";
+  document.getElementById("display_desk_leg2_right").innerText = deskLeg2Right + " mm";
+  document.getElementById("display_desk_leg1_left").innerText = deskLeg1Left + " mm";
+  document.getElementById("display_desk_leg2_left").innerText = deskLeg2Left + " mm";
+
+  // tenban() が使う変数
+  s = deskWidth;
+  s2 = deskDepth;
+
+  // 今後 ashi や makuita で使うために残しておく
+  s3 = deskLegHeight;
+  s4 = deskApronHeight;
+  s5 = deskFootWidth;
+  s8 = deskLeg1Left;
+  s6 = deskLeg1Right;
+  s9 = deskLeg2Left;
+  s7 = deskLeg2Right;
+}
+
+function updateShelfDisplays() {
+    document.getElementById("display_shelf_thickness").innerText =
+        document.getElementById("shelf_thickness").value + " mm";
+
+    document.getElementById("display_shelf_width").innerText =
+        document.getElementById("shelf_width").value + " mm";
+
+    document.getElementById("display_shelf_depth").innerText =
+        document.getElementById("shelf_depth").value + " mm";
+
+    document.getElementById("display_shelf_foot_width").innerText =
+        document.getElementById("shelf_foot_width").value + " mm";
+
+    document.getElementById("display_shelf_leg_width").innerText =
+        document.getElementById("shelf_leg_width").value + " mm";
+
+    document.getElementById("display_shelf_leg_height").innerText =
+        document.getElementById("shelf_leg_height").value + " mm";
+
+    document.getElementById("display_shelf_joint_thickness").innerText =
+        document.getElementById("shelf_joint_thickness").value + " mm";
+
+    document.getElementById("display_shelf_leg_height_2").innerText =
+        document.getElementById("shelf_leg_height_2").value + " mm";
+
+    document.getElementById("display_shelf_columns").innerText =
+        document.getElementById("shelf_columns").value;
+
+    document.getElementById("display_shelf_rows").innerText =
+        document.getElementById("shelf_rows").value;
+
+    document.getElementById("display_shelf_joint_thickness_2").innerText =
+        document.getElementById("shelf_joint_thickness_2").value + " mm";
+
+    document.getElementById("display_shelf_height_body").innerText =
+        document.getElementById("shelf_height_body").value + " mm";
+
+        d = parseFloat(document.getElementById("shelf_thickness").value);
+s = parseFloat(document.getElementById("shelf_width").value);
+s2 = parseFloat(document.getElementById("shelf_depth").value);
+s3 = parseFloat(document.getElementById("shelf_foot_width").value);
+s4 = parseFloat(document.getElementById("shelf_leg_width").value);
+s5 = parseFloat(document.getElementById("shelf_leg_height").value);
+d2 = parseFloat(document.getElementById("shelf_joint_thickness").value);
+s6 = parseFloat(document.getElementById("shelf_leg_height_2").value);
+kazu = parseFloat(document.getElementById("shelf_columns").value);
+kazu2 = parseFloat(document.getElementById("shelf_rows").value);
+d3 = parseFloat(document.getElementById("shelf_joint_thickness_2").value);
+s7 = parseFloat(document.getElementById("shelf_height_body").value);
+}
+
 
 function saveS(){
    save("mySVG.svg"); // give file name
@@ -284,9 +286,9 @@ function mousePressed(){
     strokeWeight(1);
     
     beginShape();
-    vertex(xp6,yp6);
-    vertex(xp7+s2,yp7+s11);
-    vertex(xp7+s2,yp7+s11-offsetY2);
+    vertex(x,y);
+    vertex(xp7, yp7 + s11);
+vertex(xp7, yp7 + s11 - offsetY2);
     vertex(x1+s2-s11/5,yp7+s11-offsetY2-s11/5);
     vertex(resultX+s2,yp3);
     vertex(resultX + offsetX+s2, yp3 + offsetY);
@@ -397,8 +399,8 @@ function mousePressed(){
 
   function ushiro(x,y){
     beginShape();
-    vertex(x+d,y+30-s3);
-    vertex(x+s+40-d,y+30-s3);
+    vertex(x+d,y+10-s3);
+    vertex(x+s+40-d,y+10-s3);
     vertex(x+s+40-d,s9+d);
     vertex(x+s+40,s9+d);
     vertex(x+s+40,s10+d);
@@ -417,12 +419,25 @@ function mousePressed(){
     vertex(x,s10+d);
     vertex(x,s9+d);
     vertex(x+d,s9+d);
-    vertex(x+d,y+30-s3);
+    vertex(x+d,y+10-s3);
     endShape();
   }
 
   function ashi(x,y){
     beginShape();
+   vertex(x,y);
+   vertex(x+s12/2,y);
+   vertex(x+s12/2,y+d);
+   vertex(x+s12-d,y+d);
+   vertex(x+s12-d,y+s12/2);
+   vertex(x+s12,y+s12/2);
+   vertex(x+s12,y+s12);
+   vertex(x+s12-d,y+s12);
+   vertex(x,y+d);
+   vertex(x,y);
+
+   endShape();
+    /*beginShape();
    vertex(x,y);
    vertex(x+s12/2,y);
    vertex(x+s12/2,y-d);
@@ -432,21 +447,9 @@ function mousePressed(){
    vertex(x+s12/2-d,y+s12);
    vertex(x-d,y+s12);
    vertex(x-d,y+s12/2);
-   vertex(x,y+s12);
+   vertex(x,y+s12/2);
    vertex(x,y);
 
-   endShape();
-   /*beginShape();
-   vertex(x,y);
-   vertex(x+15,y);
-   vertex(x+d+d+15,y+d+d+15-15);
-   vertex(x+d+d+15,y+d+d+15);
-   vertex(x+d+d,y+d+d+15);
-   vertex(x+d+d,y+d+15);
-   vertex(x+d,y+d+15);
-   vertex(x+d,y+15);
-   vertex(x,y+15);
-   vertex(x,y);
    endShape();*/
     
   }
@@ -462,67 +465,442 @@ function mousePressed(){
     
   }
 
-  // 元の線の2つの点
- //x1 = 140;
- y1 = 200-d;
-//x2 = 160;
- y2 = 100;
-x3 = 30;
- y3 = 200;
-x4 = 160+s2;
-//y4 = s11;
- y4 = 200;
 
-// 使用例
-let xp = x1;
-let yp = y1;
-let xp2 = x2;
-let yp2 = y2;
-yp3 = y1-20;
-yp4 = y1-60;
-//yp4 = y1-60;
-yp5=100;
+function deskTenban(x,y){
+  beginShape();
+  vertex(x,y);
+  vertex((x+(s*1/3))-(d/2+d),y);
+  vertex(x+(s*1/3)-(d/2+d),y+d);
+  vertex(x+(s*1/3)-(d/2),y+d);
+  vertex(x+(s*1/3)-(d/2),y+d+d);
+  vertex(x+(s*1/3)+(d/2),y+d+d);
+  vertex(x+(s*1/3)+(d/2),y+d);
+  vertex(x+(s*1/3)+d+d/2,y+d);
+  vertex(x+(s*1/3)+d+d/2,y);
+  
+  vertex((x+(s*2/3))-(d/2+d),y);
+  vertex(x+(s*2/3)-(d/2+d),y+d);
+  vertex(x+(s*2/3)-(d/2),y+d);
+  vertex(x+(s*2/3)-(d/2),y+d+d);
+  vertex(x+(s*2/3)+(d/2),y+d+d);
+  vertex(x+(s*2/3)+(d/2),y+d);
+  vertex(x+(s*2/3)+d+d/2,y+d);
+  vertex(x+(s*2/3)+d+d/2,y);
+  
+  vertex(x+s,y);
+  
+  vertex(x+s,y+((s2*1/3))-(d/2+d));
+  vertex(x+s-d,y+((s2*1/3))-(d/2+d));
+  vertex(x+s-d,y+((s2*1/3))-(d/2));
+  vertex(x+s-d*2,y+((s2*1/3))-(d/2));
+  vertex(x+s-d*2,y+((s2*1/3))+(d/2));
+  vertex(x+s-d,y+((s2*1/3))+(d/2));
+  vertex(x+s-d,y+((s2*1/3))+(d/2+d));
+  vertex(x+s,y+((s2*1/3))+(d/2+d));
+  
+  vertex(x+s,y+((s2*2/3))-(d/2+d));
+  vertex(x+s-d,y+((s2*2/3))-(d/2+d));
+  vertex(x+s-d,y+((s2*2/3))-(d/2));
+  vertex(x+s-d*2,y+((s2*2/3))-(d/2));
+  vertex(x+s-d*2,y+((s2*2/3))+(d/2));
+  vertex(x+s-d,y+((s2*2/3))+(d/2));
+  vertex(x+s-d,y+((s2*2/3))+(d/2+d));
+  vertex(x+s,y+((s2*2/3))+(d/2+d));
+  
+  vertex(x+s,y+s2);
+  
+  vertex(x+(s*2/3)+d+d/2,y+s2);
+  vertex(x+(s*2/3)+d+d/2,y+s2-d);
+  vertex(x+(s*2/3)+(d/2),y+s2-d);
+  vertex(x+(s*2/3)+(d/2),y+s2-d*2);
+  vertex(x+(s*2/3)-(d/2),y+s2-d*2);
+  vertex(x+(s*2/3)-(d/2),y+s2-d);
+  vertex(x+(s*2/3)-(d/2+d),y+s2-d);
+  vertex((x+(s*2/3))-(d/2+d),y+s2);
+  
+  vertex(x+(s*1/3)+d+d/2,y+s2);
+  vertex(x+(s*1/3)+d+d/2,y+s2-d);
+  vertex(x+(s*1/3)+(d/2),y+s2-d);
+  vertex(x+(s*1/3)+(d/2),y+s2-d*2);
+  vertex(x+(s*1/3)-(d/2),y+s2-d*2);
+  vertex(x+(s*1/3)-(d/2),y+s2-d);
+  vertex(x+(s*1/3)-(d/2+d),y+s2-d);
+  vertex((x+(s*1/3))-(d/2+d),y+s2);
+  
+  vertex(x,y+s2);
+  
+  vertex(x,y+((s2*2/3))+(d/2+d));
+  vertex(x+d,y+((s2*2/3))+(d/2+d));
+  vertex(x+d,y+((s2*2/3))+(d/2));
+  vertex(x+d*2,y+((s2*2/3))+(d/2));
+  vertex(x+d*2,y+((s2*2/3))-(d/2));
+  vertex(x+d,y+((s2*2/3))-(d/2));
+  vertex(x+d,y+((s2*2/3))-(d/2+d));
+  vertex(x,y+((s2*2/3))-(d/2+d));
+  
+  vertex(x,y+((s2*1/3))+(d/2+d));
+  vertex(x+d,y+((s2*1/3))+(d/2+d));
+  vertex(x+d,y+((s2*1/3))+(d/2));
+  vertex(x+d*2,y+((s2*1/3))+(d/2));
+  vertex(x+d*2,y+((s2*1/3))-(d/2));
+  vertex(x+d,y+((s2*1/3))-(d/2));
+  vertex(x+d,y+((s2*1/3))-(d/2+d));
+  vertex(x,y+((s2*1/3))-(d/2+d));
+  
+  vertex(x,y);
+  endShape();
+  
+  beginShape();
+  vertex(x+(s*1/3)-d/2,y+((s2*1/3))-(d/2+d));
+  vertex(x+(s*1/3)+d/2,y+((s2*1/3))-(d/2+d));
+  vertex(x+(s*1/3)+d/2,y+((s2*1/3))-(d/2));
+  vertex(x+(s*1/3)+d+d/2,y+((s2*1/3))-(d/2));
+  vertex(x+(s*1/3)+d+d/2,y+((s2*1/3))+(d/2));
+  vertex(x+(s*1/3)+d/2,y+((s2*1/3))+(d/2));
+  vertex(x+(s*1/3)+d/2,y+((s2*1/3))+(d+d/2));
+  vertex(x+(s*1/3)-d/2,y+((s2*1/3))+(d+d/2));
+  vertex(x+(s*1/3)-d/2,y+((s2*1/3))+(d/2));
+  vertex(x+(s*1/3)-d/2-d,y+((s2*1/3))+(d/2));
+  vertex(x+(s*1/3)-d/2-d,y+((s2*1/3))-(d/2));
+  vertex(x+(s*1/3)-d/2,y+((s2*1/3))-(d/2));
+  vertex(x+(s*1/3)-d/2,y+((s2*1/3))-(d/2+d));
+  
+  endShape();
+  
+  beginShape();
+  vertex(x+(s*2/3)-d/2,y+((s2*1/3))-(d/2+d));
+  vertex(x+(s*2/3)+d/2,y+((s2*1/3))-(d/2+d));
+  vertex(x+(s*2/3)+d/2,y+((s2*1/3))-(d/2));
+  vertex(x+(s*2/3)+d+d/2,y+((s2*1/3))-(d/2));
+  vertex(x+(s*2/3)+d+d/2,y+((s2*1/3))+(d/2));
+  vertex(x+(s*2/3)+d/2,y+((s2*1/3))+(d/2));
+  vertex(x+(s*2/3)+d/2,y+((s2*1/3))+(d+d/2));
+  vertex(x+(s*2/3)-d/2,y+((s2*1/3))+(d+d/2));
+  vertex(x+(s*2/3)-d/2,y+((s2*1/3))+(d/2));
+  vertex(x+(s*2/3)-d/2-d,y+((s2*1/3))+(d/2));
+  vertex(x+(s*2/3)-d/2-d,y+((s2*1/3))-(d/2));
+  vertex(x+(s*2/3)-d/2,y+((s2*1/3))-(d/2));
+  vertex(x+(s*2/3)-d/2,y+((s2*1/3))-(d/2+d));
+  endShape();
+  
+  beginShape();
+  vertex(x+(s*2/3)-d/2,y+((s2*2/3))-(d/2+d));
+  vertex(x+(s*2/3)+d/2,y+((s2*2/3))-(d/2+d));
+  vertex(x+(s*2/3)+d/2,y+((s2*2/3))-(d/2));
+  vertex(x+(s*2/3)+d+d/2,y+((s2*2/3))-(d/2));
+  vertex(x+(s*2/3)+d+d/2,y+((s2*2/3))+(d/2));
+  vertex(x+(s*2/3)+d/2,y+((s2*2/3))+(d/2));
+  vertex(x+(s*2/3)+d/2,y+((s2*2/3))+(d+d/2));
+  vertex(x+(s*2/3)-d/2,y+((s2*2/3))+(d+d/2));
+  vertex(x+(s*2/3)-d/2,y+((s2*2/3))+(d/2));
+  vertex(x+(s*2/3)-d/2-d,y+((s2*2/3))+(d/2));
+  vertex(x+(s*2/3)-d/2-d,y+((s2*2/3))-(d/2));
+  vertex(x+(s*2/3)-d/2,y+((s2*2/3))-(d/2));
+  vertex(x+(s*2/3)-d/2,y+((s2*2/3))-(d/2+d));
+  endShape();
+  
+  beginShape();
+  vertex(x+(s*1/3)-d/2,y+((s2*2/3))-(d/2+d));
+  vertex(x+(s*1/3)+d/2,y+((s2*2/3))-(d/2+d));
+  vertex(x+(s*1/3)+d/2,y+((s2*2/3))-(d/2));
+  vertex(x+(s*1/3)+d+d/2,y+((s2*2/3))-(d/2));
+  vertex(x+(s*1/3)+d+d/2,y+((s2*2/3))+(d/2));
+  vertex(x+(s*1/3)+d/2,y+((s2*2/3))+(d/2));
+  vertex(x+(s*1/3)+d/2,y+((s2*2/3))+(d+d/2));
+  vertex(x+(s*1/3)-d/2,y+((s2*2/3))+(d+d/2));
+  vertex(x+(s*1/3)-d/2,y+((s2*2/3))+(d/2));
+  vertex(x+(s*1/3)-d/2-d,y+((s2*2/3))+(d/2));
+  vertex(x+(s*1/3)-d/2-d,y+((s2*2/3))-(d/2));
+  vertex(x+(s*1/3)-d/2,y+((s2*2/3))-(d/2));
+  vertex(x+(s*1/3)-d/2,y+((s2*2/3))-(d/2+d));
+  endShape();
+}
+
+function deskMakuita(x,y){
+  beginShape();
+  vertex(x,y);
+  vertex(x+d*2,y);
+  vertex(x+d*2,y+d);
+  vertex(x+(s*1/3)-d-d/2,y+d);
+  vertex(x+(s*1/3)-d-d/2,y);
+  vertex(x+(s*1/3)+d+d/2,y);
+  vertex(x+(s*1/3)+d+d/2,y+d);
+  vertex(x+(s*2/3)-d-d/2,y+d);
+  vertex(x+(s*2/3)-d-d/2,y);
+  vertex(x+(s*2/3)+d+d/2,y);
+  vertex(x+(s*2/3)+d+d/2,y+d);
+  vertex(x+s-d*2,y+d);
+  vertex(x+s-d*2,y);
+  vertex(x+s,y);
+  vertex(x+s,y+d*2);
+  vertex(x+s-d,y+d*2);
+  vertex(x+s-d,y+s4);
+  vertex(x+(s*2/3)+d/2,y+s4);
+  vertex(x+(s*2/3)+d/2,y+s4-s4/2);
+  vertex(x+(s*2/3)-d/2,y+s4-s4/2);
+  vertex(x+(s*2/3)-d/2,y+s4);
+  vertex(x+(s*1/3)+d/2,y+s4);
+  vertex(x+(s*1/3)+d/2,y+s4-s4/2);
+  vertex(x+(s*1/3)-d/2,y+s4-s4/2);
+  vertex(x+(s*1/3)-d/2,y+s4);
+  vertex(x+d,y+s4);
+  vertex(x+d,y+d*2);
+  vertex(x,y+d*2);
+  vertex(x,y);
+  endShape();
+}
+
+function deskMakuita2(x,y){
+  beginShape();
+  vertex(x,y);
+  vertex(x+d*2,y);
+  vertex(x+d*2,y+d);
+  vertex(x+s4,y+d);
+  vertex(x+s4,y+s2-d);
+  vertex(x+d*2,y+s2-d);
+  vertex(x+d*2,y+s2);
+  vertex(x,y+s2);
+  vertex(x,y+s2-d*2);
+  vertex(x+d,y+s2-d*2);
+  vertex(x+d,y+(s2*2/3)+d+d/2);
+  vertex(x,y+(s2*2/3)+d+d/2);
+  vertex(x,y+(s2*2/3)+d/2);
+  vertex(x+s4/2,y+(s2*2/3)+d/2);
+  vertex(x+s4/2,y+(s2*2/3)-d/2);
+  vertex(x,y+(s2*2/3)-d/2);
+  vertex(x,y+(s2*2/3)-d-d/2);
+  vertex(x+d,y+(s2*2/3)-d-d/2);
+  vertex(x+d,y+(s2*1/3)+d+d/2);
+  vertex(x,y+(s2*1/3)+d+d/2);
+  vertex(x,y+(s2*1/3)+d/2);
+  vertex(x+s4/2,y+(s2*1/3)+d/2);
+  vertex(x+s4/2,y+(s2*1/3)-d/2);
+  vertex(x,y+(s2*1/3)-d/2);
+  vertex(x,y+(s2*1/3)-d-d/2);
+  vertex(x+d,y+(s2*1/3)-d-d/2);
+  vertex(x+d,y+d*2);
+  vertex(x,y+d*2);
+  vertex(x,y);
+  endShape();
+}
+
+function deskAshi(x,y){
+  beginShape();
+  vertex(x,y+d);
+  vertex(x+(s*1/3)-d-d/2,y+d);
+  vertex(x+(s*1/3)-d-d/2,y);
+  vertex(x+(s*1/3)-d/2,y);
+  vertex(x+(s*1/3)-d/2,y+d*2);
+  vertex(x+(s*1/3)+d/2,y+d*2);
+  vertex(x+(s*1/3)+d/2,y);
+  vertex(x+(s*1/3)+d+d/2,y);
+  vertex(x+(s*1/3)+d+d/2,y+d);
+  
+  vertex(x+(s*2/3)-d-d/2,y+d);
+  vertex(x+(s*2/3)-d-d/2,y);
+  vertex(x+(s*2/3)-d/2,y);
+  vertex(x+(s*2/3)-d/2,y+d*2);
+  vertex(x+(s*2/3)+d/2,y+d*2);
+  vertex(x+(s*2/3)+d/2,y);
+  vertex(x+(s*2/3)+d+d/2,y);
+  vertex(x+(s*2/3)+d+d/2,y+d);
+  
+  vertex(x+s-d,y+d);
+  vertex(x+s-d,y+s4);
+  vertex(x+s,y+s4);
+  vertex(x+s,y+s4+(s3-s4)/2);
+  vertex(x+s-d,y+s4+(s3-s4)/2);
+  vertex(x+s-d,y+s3);///////
+  vertex(x+s-d-s5/2,y+s3);
+  vertex(x+s-d-s5/2,y+s3-d);
+  vertex(x+s-d-s5,y+s3-d);
+  vertex(x+s-d-s6,y+s4);
+  vertex(x+s8,y+s4);
+  vertex(x+s5,y+s3-d);
+  vertex(x+s5/2,y+s3-d);
+  vertex(x+s5/2,y+s3);
+  vertex(x,y+s3);
+  vertex(x,y+s4+(s3-s4)/2);
+  vertex(x+d,y+s4+(s3-s4)/2);
+  vertex(x+d,y+s4);
+  vertex(x,y+s4);
+  vertex(x,y+d);
+  endShape();
+}
+
+function deskAshi2(x,y){
+  beginShape();
+  vertex(x,y+d);
+  
+  vertex(x+(s2*1/3)-d-d/2,y+d);
+  vertex(x+(s2*1/3)-d-d/2,y);
+  vertex(x+(s2*1/3)-d/2,y);
+  vertex(x+(s2*1/3)-d/2,y+d*2);
+  vertex(x+(s2*1/3)+d/2,y+d*2);
+  vertex(x+(s2*1/3)+d/2,y);
+  vertex(x+(s2*1/3)+d+d/2,y);
+  vertex(x+(s2*1/3)+d+d/2,y+d);
+  
+  vertex(x+(s2*2/3)-d-d/2,y+d);
+  vertex(x+(s2*2/3)-d-d/2,y);
+  vertex(x+(s2*2/3)-d/2,y);
+  vertex(x+(s2*2/3)-d/2,y+d*2);
+  vertex(x+(s2*2/3)+d/2,y+d*2);
+  vertex(x+(s2*2/3)+d/2,y);
+  vertex(x+(s2*2/3)+d+d/2,y);
+  vertex(x+(s2*2/3)+d+d/2,y+d);
+  
+  vertex(x+s2-d,y+d);
+  vertex(x+s2-d,y+s4);
+  vertex(x+s2,y+s4);
+  vertex(x+s2,y+s4+(s3-s4)/2);
+  vertex(x+s2-d,y+s4+(s3-s4)/2);
+  
+  vertex(x+s2-d,y+s3);/////
+  vertex(x+s2-d-s5/2,y+s3);
+  vertex(x+s2-d-s5/2,y+s3-d);
+  vertex(x+s2-d-s5,y+s3-d);
+  vertex(x+s2-d-s7,y+s4);
+  vertex(x+s9,y+s4);
+  vertex(x+s5,y+s3-d);
+  vertex(x+s5/2,y+s3-d);
+  vertex(x+s5/2,y+s3);
+  vertex(x,y+s3);
+  vertex(x,y+s4+(s3-s4)/2);
+  vertex(x+d,y+s4+(s3-s4)/2);
+  vertex(x+d,y+s4);
+  vertex(x,y+s4);
+  vertex(x,y+d);
+  endShape();
+}
+
+function deskAshisaki(x,y){
+  beginShape();
+  vertex(x+s5/2-d,y);
+  vertex(x+s5/2-d+d,y);
+  //vertex(x+s5+s5/2,y);
+  vertex(x+s5+s5/2-d,y+s5+d-d);
+  vertex(x+s5+s5/2-d,y+s5+d);
+  vertex(x+s5-d,y+s5+d);
+  vertex(x+s5-d,y+s5);
+  vertex(x+s5/2,y+s5);
+  vertex(x+s5/2,y+s5/2);
+  vertex(x+s5/2-d,y+s5/2);
+  vertex(x+s5/2-d,y);
+  //vertex(x+s-s4/2,y+s3);
+  endShape();
+}
+
+function drawChair() {
+  fill(50);
+  textSize(24);
+  text("側面縦幅:" + (320 + s3 + d - (0 + yp5)) + "mm", 10, -50);
+  text("側面横幅:" + (170 + d + s2) + "mm", 220, -50);
+  text("必要パーツ数: 側面2つ 足先4つ その他1つずつ", 430, -50);
+
+  fill(0, 255, 0);
+  text("全体縦幅:" + (320 + s3 + d - (0 + yp5) + 20) + "mm", 10, 0);
+  fill(255, 0, 0);
+  text("全体横幅:" + (170 + d * 2 + s2) + "mm", 220, 0);
+  fill(0, 0, 255);
+  text("全体奥行き:" + (40 + s) + "mm", 430, 0);
+
+  fill(50);
+  text(length6 || "", 10, 60);
+
+  translate(0, 300);
+
+  // ここで椅子用の計算をしてから描画
+  x1 = 140 + s8;
+  y1 = 200 - d;
+  x2 = 145 + s7 + s8;
+  y2 = 100;
+
+  x3 = 30;
+y3 = 200;
+x4 = 160 + s2;
+y4 = 200;
+
 xp6 = x3;
 yp6 = y3;
 xp7 = x4;
 yp7 = y4;
-yp8=yp7-d/9;
-resultX = calculateX(xp, yp, xp2, yp2, yp3);
-resultX2 = calculateX(xp, yp, xp2, yp2, yp4);
-resultX3 = calculateX(xp, yp, xp2, yp2, yp5);
-resultX4 = calculateX(xp6, yp6, xp7, yp7, yp8);
-console.log(); // 結果: 50
 
-/*<div class="control-section">
-                <h3>椅子のカスタムパラメータ</h3>
-                <div class="control-group">
-                    <label for="s">座面横幅 (s)</label>
-                    <input type="range" id="s" value="80" min="50" max="500">
-                    <span id="display_s">80 mm</span>
-                </div>
-                <div class="control-group">
-                    <label for="s2">側面横幅調整 (s2)</label>
-                    <input type="range" id="s2" value="0" min="-100" max="500">
-                    <span id="display_s2">0 mm</span>
-                </div>
-                <div class="control-group">
-                    <label for="s3">足長さ調整 (s3)</label>
-                    <input type="range" id="s3" value="0" min="-50" max="500">
-                    <span id="display_s3">0 mm</span>
-                </div>
-                <div class="control-group">
-                    <label for="s5">足細さ調整 (s5)</label>
-                    <input type="range" id="s5" value="0" min="-200" max="200">
-                    <span id="display_s5">0 mm</span>
-                </div>
-                <div class="control-group">
-                    <label for="yp5">背もたれ長さ (yp5)</label>
-                    <input type="range" id="yp5" value="100" min="-500" max="130">
-                    <span id="display_yp5">100 mm</span>
-                </div>
-                <div class="control-group">
-                    <label for="s6">足調整 (s6)</label>
-                    <input type="range" id="s6" value="40" min="-200" max="200">
-                    <span id="display_s6">0 mm</span>
-                </div>
-            </div>*/
+yp3 = y1 - 20;
+yp4 = y1 - 60;
+yp8 = y4 - d / 9;
+
+  resultX = calculateX(x1, y1, x2, y2, yp3);
+  resultX2 = calculateX(x1, y1, x2, y2, yp4);
+  resultX3 = calculateX(x1, y1, x2, y2, yp5);
+  resultX4 = calculateX(x3, y3, x4, y4, yp8);
+
+  let dx = x2 - x1;
+  let dy = y2 - y1;
+  let length = dist(x1, y1, x2, y2);
+
+  let perpDx = -dy / length;
+  let perpDy = dx / length;
+
+  offsetX = perpDx * d;
+  offsetY = perpDy * d;
+
+  newX1 = x1 + offsetX;
+  newY1 = y1 + offsetY;
+  newX2 = resultX3 + offsetX;
+  newY2 = yp5 + offsetY;
+
+  let dx2 = x4 - x3;
+  let dy2 = y4 - y3;
+  let length3 = dist(x3, y3, x4, y4);
+
+  let perpDx2 = -dy2 / length3;
+  let perpDy2 = dx2 / length3;
+
+  offsetX2 = perpDx2 * d;
+  offsetY2 = perpDy2 * d;
+
+  length2 = dist(resultX + s2, yp3, resultX2 + s2, yp4);
+  length4 = dist(resultX2 + s2, yp4, resultX3 + s2, yp5);
+
+  centerY = 120 + s3 + d;
+
+  fill(255);
+  noStroke();
+
+  sokumen(30, 200);
+  ue(230 + s2, 100);
+  semotare(330 + s2 + s, 100);
+  mae(450 + s2 + s * 2, 200 + s3);
+  ushiro(500 + s2 + s * 3, 200 + s3);
+  ashi(300 + s2, 50);
+}
+
+function drawDesk() {
+  fill(0);
+  textSize(24);
+  text("横幅:"+s+"mm",10,-50);
+  text("縦幅:"+s2+"mm",200,-50);
+  text("脚長:"+s3+"mm",370,-50);
+  text("板の厚さ:"+d+"mm",540,-50);
+  text("幕板:"+s4+"mm",730,-50);
+  text("足幅:"+s5+"mm",890,-50);
+  text("必要パーツ数: 天板1つ 幕板2つずつ 脚2つずつ 足先4つ", 1050, -50);
+  text("脚1右:"+s6+"mm",10,0);
+  text("脚2右:"+s7+"mm",200,0);
+  text("脚1左:"+s8+"mm",370,0);
+  text("脚2左:"+s9+"mm",540,0);
+
+  noFill();
+  stroke(0);
+
+  scale(0.5);
+  translate(0,100);
+
+  deskTenban(10,10);
+  deskMakuita(10,30+910+s2-910);
+  deskMakuita2(30+1820+s-1820,10);
+  deskAshi(80+1820+s-1820+s4,10);
+  deskAshi2(100+1820+(s*2)-1820+s4,10);
+  deskAshisaki(130+1820+(s*2)-1820+s4+s2,10);
+}

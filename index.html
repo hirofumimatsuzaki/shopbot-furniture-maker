@@ -14,6 +14,7 @@
             <h2>📐 ShopBot用 カスタム家具生成</h2>
             
             <div class="control-section">
+            
                 <h3>寸法・設定の調整</h3>
                 <div class="control-group">
                     <label for="furniture_type">家具の種類</label>
@@ -32,7 +33,7 @@
                 </div>
             </div>
 
-            <div class="control-section">
+            <div class="control-section" id="chair-controls">
                 <h3>椅子のカスタムパラメータ</h3>
                 <div class="control-group">
                     <label for="s">座面横幅</label>
@@ -81,10 +82,144 @@
                 </div>
                 <div class="control-group">
                     <label for="s12">足先サイズ</label>
-                    <input type="range" id="s12" value="30" min="1" max="60">
+                    <input type="range" id="s12" value="45" min="1" max="60">
                     <span id="display_s12">0 mm</span>
                 </div>
             </div>
+
+            <div class="control-section" id="desk-controls" style="display:none;">
+    <h3>机のカスタムパラメータ</h3>
+
+    <div class="control-group">
+        <label for="desk_width">横幅</label>
+        <input type="range" id="desk_width" value="1820" min="182" max="3640">
+        <span id="display_desk_width">1820 mm</span>
+    </div>
+
+    <div class="control-group">
+        <label for="desk_depth">縦幅</label>
+        <input type="range" id="desk_depth" value="910" min="91" max="1820">
+        <span id="display_desk_depth">910 mm</span>
+    </div>
+
+    <div class="control-group">
+        <label for="desk_leg_height">脚長</label>
+        <input type="range" id="desk_leg_height" value="910" min="91" max="1820">
+        <span id="display_desk_leg_height">910 mm</span>
+    </div>
+
+    <div class="control-group">
+        <label for="desk_apron_height">幕板</label>
+        <input type="range" id="desk_apron_height" value="182" min="18" max="364">
+        <span id="display_desk_apron_height">182 mm</span>
+    </div>
+
+    <div class="control-group">
+        <label for="desk_foot_width">足幅</label>
+        <input type="range" id="desk_foot_width" value="200" min="1" max="1000">
+        <span id="display_desk_foot_width">200 mm</span>
+    </div>
+
+    <div class="control-group">
+        <label for="desk_leg1_right">脚1右</label>
+        <input type="range" id="desk_leg1_right" value="250" min="1" max="1000">
+        <span id="display_desk_leg1_right">250 mm</span>
+    </div>
+
+    <div class="control-group">
+        <label for="desk_leg2_right">脚2右</label>
+        <input type="range" id="desk_leg2_right" value="250" min="1" max="1000">
+        <span id="display_desk_leg2_right">250 mm</span>
+    </div>
+
+    <div class="control-group">
+        <label for="desk_leg1_left">脚1左</label>
+        <input type="range" id="desk_leg1_left" value="250" min="1" max="1000">
+        <span id="display_desk_leg1_left">250 mm</span>
+    </div>
+
+    <div class="control-group">
+        <label for="desk_leg2_left">脚2左</label>
+        <input type="range" id="desk_leg2_left" value="250" min="1" max="1000">
+        <span id="display_desk_leg2_left">250 mm</span>
+    </div>
+</div>
+
+<div class="control-section" id="shelf-controls" style="display:none;">
+    <h3>棚のカスタムパラメータ</h3>
+
+    <div class="control-group">
+        <label for="shelf_thickness">厚み</label>
+        <input type="range" id="shelf_thickness" value="12" min="12" max="120">
+        <span id="display_shelf_thickness">12 mm</span>
+    </div>
+
+    <div class="control-group">
+        <label for="shelf_width">横幅</label>
+        <input type="range" id="shelf_width" value="650" min="650" max="16000">
+        <span id="display_shelf_width">650 mm</span>
+    </div>
+
+    <div class="control-group">
+        <label for="shelf_depth">奥行き</label>
+        <input type="range" id="shelf_depth" value="400" min="400" max="12000">
+        <span id="display_shelf_depth">400 mm</span>
+    </div>
+
+    <div class="control-group">
+        <label for="shelf_foot_width">足幅</label>
+        <input type="range" id="shelf_foot_width" value="50" min="50" max="1000">
+        <span id="display_shelf_foot_width">50 mm</span>
+    </div>
+
+    <div class="control-group">
+        <label for="shelf_leg_width">足幅2</label>
+        <input type="range" id="shelf_leg_width" value="80" min="80" max="2000">
+        <span id="display_shelf_leg_width">80 mm</span>
+    </div>
+
+    <div class="control-group">
+        <label for="shelf_leg_height">足高さ</label>
+        <input type="range" id="shelf_leg_height" value="546" min="-1000" max="1000">
+        <span id="display_shelf_leg_height">546 mm</span>
+    </div>
+
+    <div class="control-group">
+        <label for="shelf_joint_thickness">厚み2</label>
+        <input type="range" id="shelf_joint_thickness" value="60" min="60" max="1000">
+        <span id="display_shelf_joint_thickness">60 mm</span>
+    </div>
+
+    <div class="control-group">
+        <label for="shelf_leg_height_2">足高さ2</label>
+        <input type="range" id="shelf_leg_height_2" value="-410" min="-10000" max="10000">
+        <span id="display_shelf_leg_height_2">-410 mm</span>
+    </div>
+
+    <div class="control-group">
+        <label for="shelf_columns">棚横</label>
+        <input type="range" id="shelf_columns" value="4" min="1" max="8" step="1">
+        <span id="display_shelf_columns">4</span>
+    </div>
+
+    <div class="control-group">
+        <label for="shelf_rows">棚縦</label>
+        <input type="range" id="shelf_rows" value="4" min="1" max="8" step="1">
+        <span id="display_shelf_rows">4</span>
+    </div>
+
+    <div class="control-group">
+        <label for="shelf_joint_thickness_2">厚み3</label>
+        <input type="range" id="shelf_joint_thickness_2" value="331" min="331" max="1000">
+        <span id="display_shelf_joint_thickness_2">331 mm</span>
+    </div>
+
+    <div class="control-group">
+        <label for="shelf_height_body">縦</label>
+        <input type="range" id="shelf_height_body" value="1260" min="1260" max="16000">
+        <span id="display_shelf_height_body">1260 mm</span>
+    </div>
+</div>
             
             <button id="download-button" class="download-btn">
                 DXFデータ ダウンロード
