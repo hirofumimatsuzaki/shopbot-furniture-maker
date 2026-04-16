@@ -2,6 +2,10 @@
 const CANVAS_WIDTH = 3000;
 const CANVAS_HEIGHT = 2000;
 
+const DESIGN_W = CANVAS_WIDTH;
+const DESIGN_H = CANVAS_HEIGHT;
+const VIEW_MARGIN = 40;
+
 let d = 10;
 let s = 80;
 let s2 = 0;
